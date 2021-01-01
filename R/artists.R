@@ -13,7 +13,7 @@ get_artist <- function(id, authorization = get_spotify_access_token()) {
     params <- list(
         access_token = authorization
     )
-    url <- str_glue('{base_url}/{id}')
+    url <- paste0(base_url, "/", id=)
     res <- GET(url, query = params, encode = 'json')
     stop_for_status(res)
 
@@ -84,7 +84,7 @@ get_artist_albums <- function(id, include_groups = c('album', 'single', 'appears
     base_url <- 'https://api.spotify.com/v1/artists'
 
     if (!is.null(market)) {
-        if (!str_detect(market, '^[[:alpha:]]{2}$')) {
+        if (!grepl('^[[:alpha:]]{2}$', market)) {
             stop('"market" must be an ISO 3166-1 alpha-2 country code')
         }
     }
@@ -96,7 +96,7 @@ get_artist_albums <- function(id, include_groups = c('album', 'single', 'appears
         offset = offset,
         access_token = authorization
     )
-    url <- str_glue('{base_url}/{id}/albums')
+    url <- paste0(base_url, "/", id, "/albums")
     res <- GET(url, query = params, encode = 'json')
     stop_for_status(res)
 
@@ -125,7 +125,7 @@ get_artist_top_tracks <- function(id, market = 'US', authorization = get_spotify
     base_url <- 'https://api.spotify.com/v1/artists'
 
     if (!is.null(market)) {
-        if (!str_detect(market, '^[[:alpha:]]{2}$')) {
+        if (!grepl('^[[:alpha:]]{2}$', market)) {
             stop('"market" must be an ISO 3166-1 alpha-2 country code')
         }
     }
@@ -134,7 +134,7 @@ get_artist_top_tracks <- function(id, market = 'US', authorization = get_spotify
         market = market,
         access_token = authorization
     )
-    url <- str_glue('{base_url}/{id}/top-tracks')
+    url <- paste0(base_url, "/", id, "/top-tracks")
     res <- GET(url, query = params, encode = 'json')
     stop_for_status(res)
 
@@ -163,7 +163,7 @@ get_related_artists <- function(id, authorization = get_spotify_access_token(), 
     params <- list(
         access_token = authorization
     )
-    url <- str_glue('{base_url}/{id}/related-artists')
+    url <- paste0(base_url, "/", id, "/related-artists")
     res <- GET(url, query = params, encode = 'json')
     stop_for_status(res)
 

@@ -27,7 +27,7 @@ follow_artists_or_users <- function(type, ids, authorization = get_spotify_autho
 
 follow_playlist <- function(playlist_id, public = FALSE, authorization = get_spotify_authorization_code()) {
     base_url <- 'https://api.spotify.com/v1/playlists'
-    url <- str_glue('{base_url}/{playlist_id}/followers')
+    url <- paste0(base_url, "/", playlist_id, "/followers")
     params <- list(
         public = public
     )
@@ -46,7 +46,7 @@ follow_playlist <- function(playlist_id, public = FALSE, authorization = get_spo
 
 unfollow_playlist <- function(playlist_id, authorization = get_spotify_authorization_code()) {
     base_url <- 'https://api.spotify.com/v1/playlists'
-    url <- str_glue('{base_url}/{playlist_id}/followers')
+    url <- paste0(base_url, "/", playlist_id, "/followers")
     res <- RETRY('DELETE', url, config(token = authorization), encode = 'json')
     stop_for_status(res)
     return(res)
@@ -69,8 +69,8 @@ get_my_followed_artists <- function(limit = 20, after = NULL, authorization = ge
     )
     res <- RETRY('GET', base_url, query = params, config(token = authorization), encode = 'json')
     stop_for_status(res)
-    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE) %>%
-        .$artists
+    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
+    res <- res$artists
     if (!include_meta_info) {
         res <- res$items
     }
@@ -95,9 +95,9 @@ check_me_following <- function(type, ids, authorization = get_spotify_authorizat
     stop_for_status(res)
     res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
 
-    tibble(type = type,
-           id = ids,
-           is_following = res)
+    data.frame(type = type,
+               id = ids,
+               is_following = res)
 
 }
 
@@ -117,13 +117,13 @@ check_users_following <- function(playlist_id, ids, authorization = get_spotify_
         playlist_id = playlist_id,
         ids = paste0(ids, collapse = ',')
     )
-    url <- str_glue('{base_url}/{playlist_id}/followers/contains')
+    url <- paste0(base_url, "/", playlist_id, "/followers/contains")
     res <- RETRY('GET', url, query = params, config(token = authorization), encode = 'json')
     stop_for_status(res)
     res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
 
-    tibble(user_id = ids,
-           playlist_id = playlist_id,
-           is_following = res)
+    data.frame(user_id = ids,
+               playlist_id = playlist_id,
+               is_following = res)
 
 }

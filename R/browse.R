@@ -15,13 +15,15 @@ get_categories <- function(authorization = get_spotify_access_token(), df = TRUE
         access_token = authorization
     )
 
-    res <- GET(url, query = params, encode = 'json')
-    stop_for_status(res)
+    res <- httr::GET(url, query = params, encode = 'json')
+    httr::stop_for_status(res)
 
-    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
+    res <- jsonlite::fromJSON(httr::content(res, as = 'text', encoding = 'UTF-8'),
+                              flatten = TRUE)
 
-    if(df) res <- res$categories$items %>% select(id, name, everything())
-
+    if(df){
+        res <- res$categories$items
+    }
     return(res)
 }
 
@@ -38,16 +40,20 @@ get_categories <- function(authorization = get_spotify_access_token(), df = TRUE
 
 get_category <- function(category_id, country = NULL, locale = NULL, authorization = get_spotify_access_token()) {
     base_url <- 'https://api.spotify.com/v1/browse/categories'
-    url <- str_glue('{base_url}/{category_id}')
+    url <- paste0(base_url, "/", category_id)
+
     params <- list(
         country = country,
         locale = locale,
         access_token = authorization
     )
-    res <- RETRY('GET', url, query = params, encode = 'json')
-    stop_for_status(res)
-    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE) %>%
-        as.data.frame(stringsAsFactors = FALSE)
+
+    res <- httr::RETRY('GET', url, query = params, encode = 'json')
+    httr::stop_for_status(res)
+    res0 <- jsonlite::fromJSON(httr::content(res, as = 'text',
+                                             encoding = 'UTF-8'),
+                               flatten = TRUE)
+    res <- as.data.frame(res0, stringsAsFactors = FALSE)
     return(res)
 }
 
@@ -55,7 +61,7 @@ get_category <- function(category_id, country = NULL, locale = NULL, authorizati
 #' Get a list of Spotify playlists tagged with a particular category.
 #'
 #' @param category_id Required. The \href{https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids}{Spotify ID} for the category.
-#' @param country Optional. A country: an \href{http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2}{ISO 3166-1 alpha-2 country code}.
+#' @param market Optional. A country: an \href{http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2}{ISO 3166-1 alpha-2 country code}.
 #' @param limit Optional. The maximum number of items to return. Default: 20. Minimum: 1. Maximum: 50.
 #' @param offset Optional. The index of the first item to return. Default: 0 (the first object). Use with \code{limit} to get the next set of items.
 #' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization guide} for more details. Defaults to \code{spotifyr::get_spotify_access_token()}
@@ -70,19 +76,20 @@ get_category <- function(category_id, country = NULL, locale = NULL, authorizati
 #' get_category_playlists('party', country = 'BR')
 #' }
 
-get_category_playlists <- function(category_id, country = NULL, limit = 20, offset = 0, authorization = get_spotify_access_token(), include_meta_info = FALSE) {
+get_category_playlists <- function(category_id, market = NULL, limit = 20, offset = 0, authorization = get_spotify_access_token(), include_meta_info = FALSE) {
     base_url <- 'https://api.spotify.com/v1/browse/categories'
-    url <- str_glue('{base_url}/{category_id}/playlists')
-    params <- list(
-        country = country,
-        limit = limit,
-        offset = offset,
-        access_token = authorization
-    )
+    url <- paste0(base_url, "/", category_id, "/playlists")
+
+    params <- list(market = market, limit = limit,
+                   offset = offset, access_token = authorization)
+
     res <- RETRY('GET', url, query = params, encode = 'json')
     stop_for_status(res)
-    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE) %>% .$playlists
-    if (!include_meta_info) {
+
+    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
+    res <- res$playlists
+
+    if(!include_meta_info){
         res <- res$items
     }
     return(res)
@@ -115,8 +122,10 @@ get_new_releases <- function(country = NULL, limit = 20, offset = 0, authorizati
     )
     res <- RETRY('GET', base_url, query = params, encode = 'json')
     stop_for_status(res)
-    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE) %>% .$albums
-    if (!include_meta_info) {
+    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
+    res <- res$albums
+
+    if(!include_meta_info){
         res <- res$items
     }
     return(res)
@@ -339,40 +348,3 @@ get_recommendations <- function(limit = 20,
 }
 
 
-#' Get recommendations for a submitted vector of track IDs, with no limit on the number of seed tracks
-#'
-#' @description
-#' This is a wrapper for the get_recommendations() function, which provides a workaround for the limit of 5 seed tracks per recommendation call. The function splits a supplied vector of track IDs into subsets of length 5, then applies a get_recommendations() call, 5 tracks at a time. This should generate a data frame of recommended tracks, with length equal to the supplied vector of track ids.
-#'
-#'
-#' @param track_ids
-#' A vector containing the IDs of the tracks you'd like recommendations for
-#' @param valence
-#' The target valence for the recommendations
-#'
-#' @return
-#' Returns a data frame containing recommendations from the Spotify API
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' get_recommendations_all(c("5VIpLopHgolKcSSj7JPCMA", "3QRGYDFFUVb4qneE4DX1gR"))
-#' }
-
-get_recommendations_all <- function(track_ids, valence = NULL) {
-    get_recs <- function(i, ids, vec_length, valence) {
-        start <- i
-        end <- ifelse(i + 4 > vec_length, vec_length, i+4)
-        seeds <- ids[c(start:end)]
-        recs <- get_recommendations(limit = end + 1 - start,
-                                    seed_tracks = seeds,
-                                    target_valence = valence)
-        recs
-    }
-
-    tracks_length <- length(track_ids)
-    tracks_seq <- seq(from = 1, to = tracks_length, by = 5)
-    all_recs <- map_df(tracks_seq,
-                       ~ get_recs(.x, track_ids, tracks_length, valence))
-    all_recs
-}

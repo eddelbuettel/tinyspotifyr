@@ -1,21 +1,14 @@
-#' \code{spotifyr} package
+#' \code{tinyspotifyr} package
 #'
-#' A Quick and Easy Wrapper for Pulling Track Audio Features from Spotify's Web API in Bulk
+#' A Quick and Easy Wrapper for Spotify's Web API
 #'
 #' See the README on
-#' \href{https://github.com/charlie86/spotifyr#readme}{GitHub}
+#' \href{https://github.com/troyhernandez/tinyspotifyr#readme}{GitHub}
 #'
 #' @docType package
-#' @name spotifyr
-#' @importFrom purrr map map_df map2
+#' @name tinyspotifyr
 #' @importFrom httr RETRY GET accept_json authenticate config content oauth2.0_token oauth_app oauth_endpoint stop_for_status
-#' @importFrom rvest html_session html_node html_nodes html_text html_attr
-#' @importFrom tibble tribble
-#' @importFrom readr read_lines
-#' @importFrom stringr str_glue str_detect str_replace_all
 #' @importFrom jsonlite fromJSON toJSON
-#' @importFrom lubridate year as_datetime
-#' @importFrom utils setTxtProgressBar txtProgressBar str
 NULL
 
 globalVars <- c(
@@ -79,7 +72,6 @@ globalVars <- c(
 "duration_ms",
 "genius_album",
 "popularity",
-"str",
 "track_number",
 ".")
 

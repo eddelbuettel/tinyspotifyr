@@ -21,7 +21,7 @@
 get_my_saved_albums <- function(limit = 20, offset = 0, market = NULL, authorization = get_spotify_authorization_code(), include_meta_info = FALSE) {
     base_url <- 'https://api.spotify.com/v1/me/albums'
     if (!is.null(market)) {
-        if (str_detect(market, '^[[:alpha:]]{2}$')) {
+        if (grepl('^[[:alpha:]]{2}$', market)) {
             stop('"market" must be an ISO 3166-1 alpha-2 country code')
         }
     }
@@ -63,7 +63,7 @@ get_my_saved_albums <- function(limit = 20, offset = 0, market = NULL, authoriza
 get_my_saved_tracks <- function(limit = 20, offset = 0, market = NULL, authorization = get_spotify_authorization_code(), include_meta_info = FALSE) {
     base_url <- 'https://api.spotify.com/v1/me/tracks'
     if (!is.null(market)) {
-        if (str_detect(market, '^[[:alpha:]]{2}$')) {
+        if (grepl('^[[:alpha:]]{2}$', market)) {
             stop('"market" must be an ISO 3166-1 alpha-2 country code')
         }
     }

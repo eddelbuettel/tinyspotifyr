@@ -47,7 +47,7 @@ search_spotify <- function(q, type = c('album', 'artist', 'playlist', 'track'), 
     }
 
     if (!is.null(market)) {
-        if (!str_detect(market, '^[[:alpha:]]{2}$')) {
+        if (!grepl('^[[:alpha:]]{2}$', market)) {
             stop('"market" must be an ISO 3166-1 alpha-2 country code')
         }
     }
@@ -79,10 +79,6 @@ search_spotify <- function(q, type = c('album', 'artist', 'playlist', 'track'), 
     stop_for_status(res)
 
     res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
-
-    if (!include_meta_info && length(type) == 1) {
-        res <- res[[str_glue('{type}s')]]$items %>% as_tibble
-    }
 
     return(res)
 }

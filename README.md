@@ -1,23 +1,21 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# spotifyr
+# tinyspotifyr
 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/spotifyr?color=brightgreen)](https://cran.r-project.org/package=spotifyr)
-![](https://cranlogs.r-pkg.org/badges/grand-total/spotifyr?color=brightgreen)
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/tinyspotifyr?color=yellow)](https://cran.r-project.org/package=tinyspotifyr)
+![](http://cranlogs.r-pkg.org/badges/tinyspotifyr?color=yellow)
 
 ## Overview
 
-spotifyr is an R wrapper for pulling track audio features and other
-information from Spotify’s Web API in bulk. By automatically batching
-API requests, it allows you to enter an artist’s name and retrieve their
-entire discography in seconds, along with Spotify’s audio features and
-track/album popularity metrics. You can also pull song and playlist
-information for a given Spotify User (including yourself\!).
+tinyspotifyr is an R wrapper for the Spotify’s Web API. It is a fork of
+[spotifyr](https://github.com/charlie86/spotifyr) with minimal
+dependencies inspired by the [tinyverse](http://www.tinyverse.org/). The
+focus of this package is to mirror the spotify api in R.
 
 ## Installation
 
-CRAN version 2.1.0 (recommended)
+R version 3.2.0 (recommended)
 
 ``` r
 install.packages('spotifyr')
@@ -26,7 +24,7 @@ install.packages('spotifyr')
 Development version
 
 ``` r
-devtools::install_github('charlie86/spotifyr')
+devtools::install_github('troyhernandez/tinyspotifyr')
 ```
 
 ## Authentication
@@ -65,178 +63,72 @@ Guide](https://developer.spotify.com/documentation/general/guides/authorization-
 
 ## Usage
 
-### What was The Beatles’ favorite key?
+### Create a Daily Radio playlist
 
 ``` r
-library(spotifyr)
-beatles <- get_artist_audio_features('the beatles')
+library(tinyspotifyr)
+playlist.name <- "Daily Radio"
 ```
+
+#### Get your playlists
 
 ``` r
-library(tidyverse)
-library(knitr)
-
-beatles %>% 
-    count(key_mode, sort = TRUE) %>% 
-    head(5) %>% 
-    kable()
+my.playlists <- get_my_playlists(limit = 50)
 ```
 
-| key\_mode |  n |
-| :-------- | -: |
-| D major   | 24 |
-| G major   | 21 |
-| A major   | 13 |
-| F major   | 12 |
-| C major   | 11 |
+##### Create a new playlist
 
-### Get your most recently played tracks
+Unfollow yesterday’s Daily Radio playlist if necessary. You can’t delete
+a playlist, can only unfollow it. Then create a new, empty playlist.
 
 ``` r
-library(lubridate)
+if(sum((my.playlists$name == playlist.name)) > 0){
+  ind <- which(my.playlists$name == playlist.name)
+  unfollow_playlist(playlist_id = my.playlists$id[ind])
+}
 
-get_my_recently_played(limit = 5) %>% 
-    mutate(artist.name = map_chr(track.artists, function(x) x$name[1]),
-           played_at = as_datetime(played_at)) %>% 
-    select(track.name, artist.name, track.album.name, played_at) %>% 
-    kable()
+dr <- create_playlist("TroyHernandez", playlist.name, public = FALSE)
 ```
 
-| track.name                                 | artist.name | track.album.name | played\_at          |
-| :----------------------------------------- | :---------- | :--------------- | :------------------ |
-| Hardened Chord - Regis Remix               | Stave       | After the Social | 2019-07-12 19:04:29 |
-| Cells                                      | Blenk       | Shelter          | 2019-07-12 18:57:59 |
-| Suspension Of Consciousness - Original mix | Flaminia    | THEOTHERSIDE 01  | 2019-07-12 18:52:32 |
-| Kerala                                     | Bonobo      | Migration        | 2019-07-12 18:46:58 |
-| Linked                                     | Bonobo      | Linked           | 2019-07-12 18:45:31 |
+#### Add songs to playlist
 
-### Find your all time favorite artists
+I use my Discover Weekly playlist as a base.
 
 ``` r
-get_my_top_artists_or_tracks(type = 'artists', time_range = 'long_term', limit = 5) %>% 
-    select(name, genres) %>% 
-    rowwise %>% 
-    mutate(genres = paste(genres, collapse = ', ')) %>% 
-    ungroup %>% 
-    kable()
+discover.weekly <- my.playlists[which(my.playlists$name == "Discover Weekly"),]
+dw.tracks <- get_playlist_tracks(discover.weekly$id)
+dw.uri <- dw.tracks$track.uri
+add_tracks_to_playlist(dr$id, dw.uri)
 ```
 
-| name         | genres                                                                                                                                         |
-| :----------- | :--------------------------------------------------------------------------------------------------------------------------------------------- |
-| Radiohead    | alternative rock, art rock, melancholia, modern rock, oxford indie, permanent wave, rock                                                       |
-| Flying Lotus | alternative hip hop, escape room, experimental hip hop, glitch, glitch hop, hip hop, indietronica, intelligent dance music, jazztronica, wonky |
-| Onra         | alternative hip hop, chillhop, trip hop, wonky                                                                                                 |
-| Teebs        | abstract beats, bass music, chillwave, wonky                                                                                                   |
-| Pixies       | alternative rock, boston rock, garage rock, indie rock, modern rock, new wave, noise pop, permanent wave, rock                                 |
+#### Add podcasts to your playlist
 
-### Find your favorite tracks at the moment
+I listen to 4 songs between each podcast. NPR updates every hour, but
+sometimes it’s empty and returns an error. Notice the zero indexing.
 
 ``` r
-get_my_top_artists_or_tracks(type = 'tracks', time_range = 'short_term', limit = 5) %>% 
-    mutate(artist.name = map_chr(artists, function(x) x$name[1])) %>% 
-    select(name, artist.name, album.name) %>% 
-    kable()
+# Add NPR
+try(add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:6BRSvIBNQnB68GuoXJRCnQ", position = 0), silent = TRUE)
+# Add WBEZ
+add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:1x1n9iWJLYNXYdDgLk5yQu", position = 1)
+# CBS
+add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:2pLChHUBuwElfAplwVGTdF", position = 6)
+# JRE Clips
+add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:1LMmQF9PH8LjYrktU0Oq5Y", position = 7)
+# Chicago Tribune
+add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:3K1ffPI9ynW3mO24A5rfbF", position = 12)
+# Marketplace
+add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:6zYlX5UGEPmNCWacYUJQGD", position = 13)
+# Crains
+add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:20Ut1ENH9nTy4LqWF9p8vq", position = 18)
+# Planet Money
+add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:4FYpq3lSeQMAhqNI81O0Cn", position = 23)
+# WSJ Tech
+add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:51MrXc7hJQBE2WJf2g4aWN", position = 28)
+# Useful idiots
+add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:5BpYXlVorOw5FZ9pfpu7ff", position = 33)
+# Chicago Tonight to the end of the podcast
+add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:2WuB3zkmXGo7sJUZ6GQIx3")
 ```
 
-| name                    | artist.name | album.name |
-| :---------------------- | :---------- | :--------- |
-| Impossible Knots        | Thom Yorke  | ANIMA      |
-| I Am a Very Rude Person | Thom Yorke  | ANIMA      |
-| Traffic                 | Thom Yorke  | ANIMA      |
-| Not The News            | Thom Yorke  | ANIMA      |
-| Runwayaway              | Thom Yorke  | ANIMA      |
-
-### What’s the most joyful Joy Division song?
-
-My favorite audio feature has to be “valence,” a measure of musical
-positivity.
-
-``` r
-joy <- get_artist_audio_features('joy division')
-```
-
-``` r
-joy %>% 
-    arrange(-valence) %>% 
-    select(track_name, valence) %>% 
-    head(5) %>% 
-    kable()
-```
-
-| track\_name                         | valence |
-| :---------------------------------- | ------: |
-| Passover - 2007 Remaster            |   0.941 |
-| Colony - 2007 Remaster              |   0.808 |
-| Atrocity Exhibition - 2007 Remaster |   0.787 |
-| A Means to an End - 2007 Remaster   |   0.752 |
-| Interzone - 2007 Remaster           |   0.746 |
-
-Now if only there was some way to plot
-joy…
-
-### Joyplot of the emotional rollercoasters that are Joy Division’s albums
-
-``` r
-library(ggjoy)
-
-ggplot(joy, aes(x = valence, y = album_name)) + 
-    geom_joy() + 
-    theme_joy() +
-    ggtitle("Joyplot of Joy Division's joy distributions", subtitle = "Based on valence pulled from Spotify's Web API with spotifyr")
-```
-
-![](man/figures/README-unnamed-chunk-10-1.png)<!-- -->
-
-## Sentify: A Shiny app
-
-This [app](http://rcharlie.net/sentify/), powered by spotifyr, allows
-you to visualize the energy and valence (musical positivity) of all of
-Spotify’s artists and playlists.
-
-## Dope stuff other people have done with spotifyr
-
-The coolest thing about making this package has definitely been seeing
-all the awesome stuff other people have done with it. Here are a few
-examples:
-
-[Exploring the Spotify API with R: A tutorial for beginners, by a
-beginner](https://msmith7161.github.io/what-is-speechiness/), Mia Smith
-
-[Sentiment analysis of musical taste: a cross-European
-comparison](http://paulelvers.com/post/emotionsineuropeanmusic/), Paul
-Elvers
-
-[Blue Christmas: A data-driven search for the most depressing Christmas
-song](https://caitlinhudon.com/2017/12/22/blue-christmas/), Caitlin
-Hudon
-
-[KendRick
-LamaR](https://davidklaing.com/blog/2017/05/07/kendrick-lamar-data-science.html),
-David K. Laing
-
-[Vilken är Kents mest deprimerande låt? (What is Kent’s most depressing
-song?)](http://dataland.rbind.io/2017/11/07/vilken-%C3%A4r-kents-mest-deprimerande-lat/),
-Filip Wästberg
-
-[Чёрное зеркало Arcade Fire (Black Mirror Arcade
-Fire)](http://thesociety.ru/arcadefire), TheSociety
-
-[Sente-se triste quando ouve “Amar pelos dois”? Não é o único (Do you
-feel sad when you hear “Love for both?” You’re not
-alone)](http://rr.sapo.pt/especial/112355/sente-se-triste-quando-ouve-amar-pelos-dois-nao-e-o-unico),
-Rui Barros, Rádio Renascença
-
-[Using Data to Find the Angriest Death Grips
-Song](https://towardsdatascience.com/angriest-death-grips-data-anger-502168c1c2f0),
-Evan Oppenheimer
-
-[Hierarchical clustering of David Bowie
-records](https://twitter.com/WireMonkey/status/1009915034246565891?s=19),
-Alyssa Goldberg
-
-[tayloR](https://medium.com/@simranvatsa5/taylor-f656e2a09cc3), Simran
-Vatsa
-
-[Long Distance Calling: Data Science meets
-Post-Rock…](https://sebastiankuhn.wordpress.com/2017/11/08/r-spotify-part-1-long-distance-calling/),
-Sebastian Kuhn
+I run this as a cron job every morning with some extra tweaks.

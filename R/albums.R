@@ -13,7 +13,7 @@ get_album <- function(id, market = NULL, authorization = get_spotify_access_toke
     base_url <- 'https://api.spotify.com/v1/albums'
 
     if (!is.null(market)) {
-        if (str_detect(market, '^[[:alpha:]]{2}$')) {
+        if (!grepl('^[[:alpha:]]{2}$', market)) {
             stop('"market" must be an ISO 3166-1 alpha-2 country code')
         }
     }
@@ -22,11 +22,14 @@ get_album <- function(id, market = NULL, authorization = get_spotify_access_toke
         market = market,
         access_token = authorization
     )
-    url <- str_glue('{base_url}/{id}')
+    url <- paste0(base_url, "/", playlist_id, "/tracks?market=", market)
+
+    url <- paste0(base_url, "/", id)
     res <- RETRY('GET', url, query = params, encode = 'json')
     stop_for_status(res)
 
-    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
+    res <- jsonlite::fromJSON(content(res, as = 'text', encoding = 'UTF-8'),
+                              flatten = TRUE)
 
     return(res)
 }
@@ -47,7 +50,7 @@ get_albums <- function(ids, market = NULL, authorization = get_spotify_access_to
     base_url <- 'https://api.spotify.com/v1/albums'
 
     if (!is.null(market)) {
-        if (str_detect(market, '^[[:alpha:]]{2}$')) {
+        if (!grepl('^[[:alpha:]]{2}$', market)) {
             stop('"market" must be an ISO 3166-1 alpha-2 country code')
         }
     }
@@ -97,7 +100,7 @@ get_album_tracks <- function(id, limit = 20, offset = 0, market = NULL, authoriz
     base_url <- 'https://api.spotify.com/v1/albums'
 
     if (!is.null(market)) {
-        if (str_detect(market, '^[[:alpha:]]{2}$')) {
+        if (!grepl('^[[:alpha:]]{2}$', market)) {
             stop('"market" must be an ISO 3166-1 alpha-2 country code')
         }
     }
@@ -108,7 +111,7 @@ get_album_tracks <- function(id, limit = 20, offset = 0, market = NULL, authoriz
         limit = limit,
         access_token = authorization
     )
-    url <- str_glue('{base_url}/{id}/tracks')
+    url <- paste0(base_url, "/", id, "/tracks")
     res <- RETRY('GET', url, query = params, encode = 'json')
     stop_for_status(res)
 

@@ -13,7 +13,7 @@ get_track_audio_analysis <- function(id, authorization = get_spotify_access_toke
     params <- list(
         access_token = authorization
     )
-    url <- str_glue('{base_url}/{id}')
+    url <- paste0(base_url, "/", id)
     res <- RETRY('GET', url, query = params, encode = 'json')
     stop_for_status(res)
 
@@ -39,9 +39,9 @@ get_track_audio_features <- function(ids, authorization = get_spotify_access_tok
     )
     res <- RETRY('GET', base_url, query = params, encode = 'json')
     stop_for_status(res)
-    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE) %>%
-        .$audio_features %>%
-        as_tibble()
+    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
+    res <- res$audio_features
+    
     return(res)
 }
 
@@ -60,7 +60,7 @@ get_track <- function(id, market = NULL, authorization = get_spotify_access_toke
     base_url <- 'https://api.spotify.com/v1/tracks'
 
     if (!is.null(market)) {
-        if (!str_detect(market, '^[[:alpha:]]{2}$')) {
+        if (!grepl('^[[:alpha:]]{2}$', market)) {
             stop('"market" must be an ISO 3166-1 alpha-2 country code')
         }
     }
@@ -69,7 +69,7 @@ get_track <- function(id, market = NULL, authorization = get_spotify_access_toke
         market = market,
         access_token = authorization
     )
-    url <- str_glue('{base_url}/{id}')
+    url <- paste0(base_url, "/", id)
     res <- RETRY('GET', url, query = params, encode = 'json')
     stop_for_status(res)
 
@@ -94,11 +94,11 @@ get_tracks <- function(ids, market = NULL, authorization = get_spotify_access_to
     base_url <- 'https://api.spotify.com/v1/tracks'
 
     if (!is.null(market)) {
-        if (!str_detect(market, '^[[:alpha:]]{2}$')) {
+        if (!grepl('^[[:alpha:]]{2}$', market)) {
             stop('"market" must be an ISO 3166-1 alpha-2 country code')
         }
     }
-
+    
     params <- list(
         ids = paste(ids, collapse = ','),
         market = market,
