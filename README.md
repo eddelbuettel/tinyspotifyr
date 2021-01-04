@@ -67,13 +67,13 @@ Guide](https://developer.spotify.com/documentation/general/guides/authorization-
 
 ``` r
 library(tinyspotifyr)
-playlist.name <- "Daily Radio"
+playlist_name <- "Daily Radio"
 ```
 
 #### Get your playlists
 
 ``` r
-my.playlists <- get_my_playlists(limit = 50)
+my_playlists <- get_my_playlists(limit = 50)
 ```
 
 ##### Create a new playlist
@@ -82,12 +82,12 @@ Unfollow yesterday’s Daily Radio playlist if necessary. You can’t delete
 a playlist, can only unfollow it. Then create a new, empty playlist.
 
 ``` r
-if(sum((my.playlists$name == playlist.name)) > 0){
-  ind <- which(my.playlists$name == playlist.name)
-  unfollow_playlist(playlist_id = my.playlists$id[ind])
+if(sum((my_playlists$name == playlist_name)) > 0){
+  ind <- which(my_playlists$name == playlist_name)
+  unfollow_playlist(playlist_id = my_playlists$id[ind])
 }
 
-dr <- create_playlist("TroyHernandez", playlist.name, public = FALSE)
+dr <- create_playlist("TroyHernandez", playlist_name, public = FALSE)
 ```
 
 #### Add songs to playlist
@@ -95,10 +95,10 @@ dr <- create_playlist("TroyHernandez", playlist.name, public = FALSE)
 I use my Discover Weekly playlist as a base.
 
 ``` r
-discover.weekly <- my.playlists[which(my.playlists$name == "Discover Weekly"),]
-dw.tracks <- get_playlist_tracks(discover.weekly$id)
-dw.uri <- dw.tracks$track.uri
-add_tracks_to_playlist(dr$id, dw.uri)
+discover_weekly <- my_playlists[which(my_playlists$name == "Discover Weekly"),]
+dw_tracks <- get_playlist_tracks(discover_weekly$id)
+dw_uri <- dw_tracks$track.uri
+add_tracks_to_playlist(dr$id, dw_uri)
 ```
 
 #### Add podcasts to your playlist
@@ -108,27 +108,27 @@ sometimes it’s empty and returns an error. Notice the zero indexing.
 
 ``` r
 # Add NPR
-try(add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:6BRSvIBNQnB68GuoXJRCnQ", position = 0), silent = TRUE)
+try(add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:6BRSvIBNQnB68GuoXJRCnQ", position = 0), silent = TRUE)
 # Add WBEZ
-add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:1x1n9iWJLYNXYdDgLk5yQu", position = 1)
+add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:1x1n9iWJLYNXYdDgLk5yQu", position = 1)
 # CBS
-add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:2pLChHUBuwElfAplwVGTdF", position = 6)
+add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:2pLChHUBuwElfAplwVGTdF", position = 6)
 # JRE Clips
-add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:1LMmQF9PH8LjYrktU0Oq5Y", position = 7)
+add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:1LMmQF9PH8LjYrktU0Oq5Y", position = 7)
 # Chicago Tribune
-add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:3K1ffPI9ynW3mO24A5rfbF", position = 12)
+add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:3K1ffPI9ynW3mO24A5rfbF", position = 12)
 # Marketplace
-add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:6zYlX5UGEPmNCWacYUJQGD", position = 13)
+add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:6zYlX5UGEPmNCWacYUJQGD", position = 13)
 # Crains
-add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:20Ut1ENH9nTy4LqWF9p8vq", position = 18)
+add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:20Ut1ENH9nTy4LqWF9p8vq", position = 18)
 # Planet Money
-add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:4FYpq3lSeQMAhqNI81O0Cn", position = 23)
+add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:4FYpq3lSeQMAhqNI81O0Cn", position = 23)
 # WSJ Tech
-add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:51MrXc7hJQBE2WJf2g4aWN", position = 28)
+add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:51MrXc7hJQBE2WJf2g4aWN", position = 28)
 # Useful idiots
-add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:5BpYXlVorOw5FZ9pfpu7ff", position = 33)
+add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:5BpYXlVorOw5FZ9pfpu7ff", position = 33)
 # Chicago Tonight to the end of the podcast
-add_latest_to_playlist(playlist_id = Daily.Radio$id, uri = "spotify:show:2WuB3zkmXGo7sJUZ6GQIx3")
+add_latest_to_playlist(playlist_id = dr$id, uri = "spotify:show:2WuB3zkmXGo7sJUZ6GQIx3")
 ```
 
 I run this as a cron job every morning with some extra tweaks.
