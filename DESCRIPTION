@@ -1,6 +1,6 @@
 Package: tinyspotifyr
 Title: Tinyverse R Wrapper for the 'Spotify' Web API
-Version: 0.1
+Version: 0.2
 Authors@R: c(person("Troy", "Hernandez", email = "troy.hernandez.phd@gmail.com", role = c("aut", "cre")), person("Charlie", "Thompson", email = "chuck@rcharlie.com", role = c("aut")), person("Josiah", "Parry", email = "josiah.parry@yahoo.com", role = "aut"), person("Donal", "Phipps", email = "donal.phipps@gmail.com", role = "aut"), person("Tom", "Wolff", email = "tom.wolff@duke.edu", role = "aut"))
 Author: Troy Hernandez [aut, cre],
   Charlie Thompson [aut],
