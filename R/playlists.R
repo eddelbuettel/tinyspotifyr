@@ -21,9 +21,6 @@ add_items_to_playlist <- function(playlist_id, uris, position = NULL, market = "
         url <- paste0(base_url, "/", playlist_id, "/tracks?uris=", paste0(uris, collapse = ","), "&market=", market, "&position=", position) 
     }
     
-    # params <- list(
-    #   position = position
-    # )
     res <- RETRY('POST', url, config(token = authorization), encode = 'json') #, body = params)
     stop_for_status(res)
     res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
@@ -323,21 +320,39 @@ get_playlist_tracks <- function(playlist_id, fields = NULL, limit = 100, offset 
 #' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. \cr
 #' Removing tracks to the current user’s public playlists requires authorization of the \code{playlist-modify-public} scope; removing tracks from the current user’s private playlist (including collaborative playlists) requires the \code{playlist-modify-private} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.
 #' @export
-
 remove_tracks_from_playlist <- function(playlist_id, uris, authorization = get_spotify_authorization_code()) {
     base_url <- 'https://api.spotify.com/v1/playlists'
     url <- paste0(base_url, "/", playlist_id, "/tracks/")
 
     # For DELETE request params URIs should be put in body
     uris_list <- lapply(uris, function(x) list(uri = x))
-    params <- toJSON(list(tracks = uris_list), auto_unbox = T)
+    params <- jsonlite::toJSON(list(tracks = uris_list), auto_unbox = T)
 
-    res <- RETRY('DELETE', url, body = params, config(token = authorization), encode = 'json')
+    res <- httr::RETRY('DELETE', url, body = params, httr::config(token = authorization), encode = 'json')
     stop_for_status(res)
-    res <- fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
+    res <- jsonlite::fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
     return(res)
 }
 
+# remove_tracks_from_playlist <- function(playlist_id, uris, positions, market = "US", authorization = get_spotify_authorization_code()) {
+#     base_url <- 'https://api.spotify.com/v1/playlists'
+#     url <- paste0(base_url, "/", playlist_id, "/tracks")
+#     if(!is.null(market)){
+#         url <- paste0(url, "?market=", market)
+#     }
+#     
+#     # For DELETE request params URIs should be put in body
+#     uris_list <- lapply(uris, function(x) list(uri = x))
+#     for(i in 1:length(positions)){
+#         uris_list[[i]]$positions <- list(positions[i])
+#     }
+#     params <- jsonlite::toJSON(list(tracks = uris_list), auto_unbox = T)
+#     
+#     res <- httr::RETRY('DELETE', url, body = params, httr::config(token = authorization), encode = 'json')
+#     stop_for_status(res)
+#     res <- jsonlite::fromJSON(content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
+#     return(res)
+# }
 
 #' Add the latest episode of a podcast to a user’s playlist.
 #'
@@ -350,7 +365,6 @@ remove_tracks_from_playlist <- function(playlist_id, uris, authorization = get_s
 #' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. \cr
 #' Adding tracks to the current user’s public playlists requires authorization of the \code{playlist-modify-public} scope; adding tracks to the current user’s private playlist (including collaborative playlists) requires the \code{playlist-modify-private} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.
 #' @export
-
 add_latest_to_playlist <- function(playlist_id, uri, position = NULL, market = "US", authorization = get_spotify_authorization_code()) {
     id <- strsplit(uri, ":")[[1]][3]
     episodes <- get_shows_episodes(id = id)
@@ -358,4 +372,25 @@ add_latest_to_playlist <- function(playlist_id, uri, position = NULL, market = "
     if(length(uris) > 0){
         add_items_to_playlist(playlist_id = playlist_id, uris = uris, position = position, market = market, authorization = authorization)
     }
+}
+
+#' Reorder or replace one or more items from a user’s playlist.
+#'
+#' @param playlist_id Required. The \href{https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids}{Spotify ID} for the playlist.
+#' @param uris Optional. A character vector of \href{https://developer.spotify.com/documentation/web-api/#spotify-uris-and-ids}{Spotify track URIs} to add. For example \cr
+#' \code{uris = "spotify:track:4iV5W9uYEdYUVa79Axb7Rh", "spotify:track:1301WleyT98MSxVHPZCA6M"} \cr
+#' A maximum of 100 tracks can be removed in one request.
+#' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. \cr
+#' Removing tracks to the current user’s public playlists requires authorization of the \code{playlist-modify-public} scope; removing tracks from the current user’s private playlist (including collaborative playlists) requires the \code{playlist-modify-private} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.
+#' @export
+
+reorder_replace_playlist_items <- function(playlist_id, uris, authorization = get_spotify_authorization_code()) {
+    base_url <- 'https://api.spotify.com/v1/playlists'
+    url <- paste0(base_url, "/", playlist_id, "/tracks?uris=",
+                  paste0(uris, collapse = ","))
+    res <- httr::RETRY('PUT', url, #body = params,
+                       httr::config(token = authorization), encode = 'json')
+    httr::stop_for_status(res)
+    res <- jsonlite::fromJSON(httr::content(res, as = 'text', encoding = 'UTF-8'), flatten = TRUE)
+    return(res)
 }
