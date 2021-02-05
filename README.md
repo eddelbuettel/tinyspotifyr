@@ -78,27 +78,29 @@ my_playlists <- get_my_playlists(limit = 50)
 
 ##### Create a new playlist
 
-Unfollow yesterday’s Daily Radio playlist if necessary. You can’t delete
-a playlist, can only unfollow it. Then create a new, empty playlist.
+Find yesterday’s Daily Radio playlist or create a new, empty playlist.
 
 ``` r
-if(sum((my_playlists$name == playlist_name)) > 0){
-  ind <- which(my_playlists$name == playlist_name)
-  unfollow_playlist(playlist_id = my_playlists$id[ind])
+playlist_logical <- (my_playlists$name == playlist_name)
+if(sum(playlist_logical) > 0){
+  ind <- which(playlist_logical)
+  dr <- my_playlists[ind, ]
+} else {
+  dr <- create_playlist("TroyHernandez", playlist_name, public = FALSE)
 }
-
-dr <- create_playlist("TroyHernandez", playlist_name, public = FALSE)
 ```
 
 #### Add songs to playlist
 
-I use my Discover Weekly playlist as a base.
+I use my Discover Weekly playlist as a base and overwrite my existing
+“Daily Radio” tracks. Using `reorder_replace_playlist_items` is more
+robust for playlists than other options.
 
 ``` r
 discover_weekly <- my_playlists[which(my_playlists$name == "Discover Weekly"),]
 dw_tracks <- get_playlist_tracks(discover_weekly$id)
 dw_uri <- dw_tracks$track.uri
-add_tracks_to_playlist(dr$id, dw_uri)
+reorder_replace_playlist_items(playlist_id = dr$id, uris = dw_uri)
 ```
 
 #### Add podcasts to your playlist

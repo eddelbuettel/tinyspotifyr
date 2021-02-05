@@ -96,8 +96,7 @@ get_shows_episodes <- function(id, market = "US", authorization = get_spotify_ac
 #' Returns a string containing the latest episode data for a show. See \url{https://developer.spotify.com/documentation/web-api/reference/shows/get-shows-episodes/} for more information.
 #' @export
 
-get_latest_episode <- function(uri, market = "US", authorization = get_spotify_authorization_code()){
-  id <- strsplit(uri, ":")[[1]][3]
+get_latest_episode <- function(id, market = "US", authorization = get_spotify_authorization_code()){
   episodes <- get_shows_episodes(id = id)
   uri <- episodes$items$uri[1]
   uri
