@@ -13,6 +13,9 @@ check_me_following(type, ids, authorization = get_spotify_authorization_code())
 
 \item{authorization}{Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. Getting details of the artists or users the current user follows requires authorization of the \code{user-follow-read} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.}
 }
+\value{
+Returns a list of results containing user following status.
+}
 \description{
 Check if Current User Follows Artists or Users
 }

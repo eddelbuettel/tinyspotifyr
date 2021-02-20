@@ -9,6 +9,8 @@
 #' An ISO 3166-1 alpha-2 country code or the string \code{"from_token"}. Provide this parameter if you want to apply \href{https://developer.spotify.com/documentation/general/guides/track-relinking-guide/}{Track Relinking}
 #' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. \cr
 #' Adding tracks to the current user’s public playlists requires authorization of the \code{playlist-modify-public} scope; adding tracks to the current user’s private playlist (including collaborative playlists) requires the \code{playlist-modify-private} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.
+#' @return
+#' No return value. Items added to playlist.
 #' @export
 
 add_items_to_playlist <- function(playlist_id, uris, position = NULL, market = "US", authorization = get_spotify_authorization_code()) {
@@ -38,6 +40,8 @@ add_items_to_playlist <- function(playlist_id, uris, position = NULL, market = "
 #' An ISO 3166-1 alpha-2 country code or the string \code{"from_token"}. Provide this parameter if you want to apply \href{https://developer.spotify.com/documentation/general/guides/track-relinking-guide/}{Track Relinking}
 #' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. \cr
 #' Adding tracks to the current user’s public playlists requires authorization of the \code{playlist-modify-public} scope; adding tracks to the current user’s private playlist (including collaborative playlists) requires the \code{playlist-modify-private} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.
+#' @return
+#' No return value. Tracks added to playlist.
 #' @export
 
 add_tracks_to_playlist <- function(playlist_id, uris, position = NULL, market = NULL, authorization = get_spotify_authorization_code()) {
@@ -63,6 +67,8 @@ add_tracks_to_playlist <- function(playlist_id, uris, position = NULL, market = 
 #' @param description Optional. String containing the playlist description as displayed in Spotify Clients and in the Web API.
 #' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. \cr
 #' Changing a public playlist for a user requires authorization of the \code{playlist-modify-public} scope; changing a private playlist requires the \code{playlist-modify-private} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.
+#' @return
+#' No return value. Playlist details changed.
 #' @export
 
 change_playlist_details <- function(playlist_id, name = NULL, public = NULL, collaborative = NULL, description = NULL, authorization = get_spotify_authorization_code()) {

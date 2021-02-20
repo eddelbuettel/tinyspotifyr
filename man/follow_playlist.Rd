@@ -19,6 +19,9 @@ follow_playlist(
 Following a publicly followed playlist for a user requires authorization of the \code{playlist-modify-public} scope; following a privately followed playlist requires the \code{playlist-modify-private} scope. See See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}. \cr
 Note that the scopes you provide relate only to whether the current user is following the playlist publicly or privately (i.e. showing others what they are following), not whether the playlist itself is public or private.}
 }
+\value{
+No return value.
+}
 \description{
 Add the current user as a follower of a playlist.
 }

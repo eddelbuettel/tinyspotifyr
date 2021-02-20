@@ -20,6 +20,9 @@ get_my_followed_artists(
 
 \item{include_meta_info}{Optional. Boolean indicating whether to include full result, with meta information such as \code{"total"}, and \code{"limit"}. Defaults to \code{FALSE}.}
 }
+\value{
+Returns a data frame of results containing user's followed artists.
+}
 \description{
 Get the current user’s followed artists.
 }
