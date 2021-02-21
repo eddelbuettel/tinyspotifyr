@@ -9,6 +9,9 @@ verify_result(res)
 \arguments{
 \item{res}{API result ot check}
 }
+\value{
+No return value.
+}
 \description{
 Check API result for error codes
 }

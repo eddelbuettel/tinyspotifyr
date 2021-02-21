@@ -4,6 +4,8 @@
 #' @param client_id Defaults to System Environment variable "SPOTIFY_CLIENT_ID"
 #' @param client_secret Defaults to System Environment variable "SPOTIFY_CLIENT_SECRET"
 #' @keywords auth
+#' @return
+#' Returns an environment with access token data.
 #' @export
 #' @examples
 #' \dontrun{
@@ -36,6 +38,8 @@ get_spotify_access_token <- function(client_id = Sys.getenv('SPOTIFY_CLIENT_ID')
 #' @param client_secret Defaults to System Envioronment variable "SPOTIFY_CLIENT_SECRET"
 #' @param scope Space delimited string of spotify scopes, found here: https://developer.spotify.com/documentation/general/guides/scopes/. All scopes are selected by default
 #' @keywords auth
+#' @return
+#' Returns an environment with access token data.
 #' @export
 #' @examples
 #' \dontrun{

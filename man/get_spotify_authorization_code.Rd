@@ -17,6 +17,9 @@ get_spotify_authorization_code(
 
 \item{scope}{Space delimited string of spotify scopes, found here: https://developer.spotify.com/documentation/general/guides/scopes/. All scopes are selected by default}
 }
+\value{
+Returns an environment with access token data.
+}
 \description{
 This function creates a Spotify access token.
 }

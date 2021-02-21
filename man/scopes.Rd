@@ -10,6 +10,9 @@ An object of class \code{character} of length 19.
 \usage{
 scopes
 }
+\value{
+Returns a character vector.
+}
 \description{
 Vector of valid scopes for spotifyr::get_authorization_code()
 }

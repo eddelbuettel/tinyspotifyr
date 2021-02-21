@@ -2,6 +2,8 @@
 #'
 #' Check if a string matches the pattern of a Spotify URI
 #' @param s String to check
+#' @return
+#' Returns a boolean.
 #' @export
 is_uri <- function(s) {
     nchar(s) == 22 &
@@ -14,6 +16,8 @@ is_uri <- function(s) {
 #' Pitch class notation lookup
 #'
 # Create lookup to classify key: https://developer.spotify.com/web-api/get-audio-features/
+#' @return
+#' Returns a character vector.
 #' @export
 pitch_class_lookup <- c('C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B')
 
@@ -21,6 +25,8 @@ pitch_class_lookup <- c('C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A
 #'
 #' Check API result for error codes
 #' @param res API result ot check
+#' @return
+#' No return value.
 #' @export
 verify_result <- function(res) {
     if (!is.null(res$error)) {
@@ -31,6 +37,8 @@ verify_result <- function(res) {
 #' Valid scopes
 #'
 #' Vector of valid scopes for spotifyr::get_authorization_code()
+#' @return
+#' Returns a character vector.
 #' @export
 scopes <- c("ugc-image-upload", "user-read-recently-played",
             "user-read-playback-state", "user-top-read", "app-remote-control",

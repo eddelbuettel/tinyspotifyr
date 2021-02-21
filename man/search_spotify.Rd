@@ -55,6 +55,9 @@ By default external content is filtered out from responses.}
 
 \item{include_meta_info}{Optional. Boolean indicating whether to include full result, with meta information such as \code{"total"}, and \code{"limit"}. Defaults to \code{FALSE}.}
 }
+\value{
+Returns a data frame of results containing search data.
+}
 \description{
 Get Spotify Catalog information about artists, albums, tracks or playlists that match a keyword string. For more information see the official \href{https://developer.spotify.com/documentation/web-api/reference/#category-search}{documentation}.
 }

@@ -346,5 +346,3 @@ get_recommendations <- function(limit = 20,
     }
     return(res)
 }
-
-

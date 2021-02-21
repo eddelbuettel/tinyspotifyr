@@ -10,6 +10,9 @@ An object of class \code{character} of length 12.
 \usage{
 pitch_class_lookup
 }
+\value{
+Returns a character vector.
+}
 \description{
 Pitch class notation lookup
 }

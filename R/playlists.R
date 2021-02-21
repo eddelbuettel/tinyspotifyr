@@ -94,6 +94,8 @@ change_playlist_details <- function(playlist_id, name = NULL, public = NULL, col
 #' @param description Optional. String containing the playlist description as displayed in Spotify Clients and in the Web API.
 #' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. \cr
 #' Creating a public playlist for a user requires authorization of the \code{playlist-modify-public} scope; creating a private playlist requires the \code{playlist-modify-private} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.
+#' @return
+#' Returns a list containing playlist information.
 #' @export
 
 create_playlist <- function(user_id, name, public = TRUE, collaborative = FALSE, description = NULL, authorization = get_spotify_authorization_code()) {
@@ -325,6 +327,8 @@ get_playlist_tracks <- function(playlist_id, fields = NULL, limit = 100, offset 
 #' A maximum of 100 tracks can be removed in one request.
 #' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. \cr
 #' Removing tracks to the current user’s public playlists requires authorization of the \code{playlist-modify-public} scope; removing tracks from the current user’s private playlist (including collaborative playlists) requires the \code{playlist-modify-private} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.
+#' @return
+#' No return value. Tracks are removed from playlist.
 #' @export
 remove_tracks_from_playlist <- function(playlist_id, uris, authorization = get_spotify_authorization_code()) {
     base_url <- 'https://api.spotify.com/v1/playlists'
@@ -370,6 +374,8 @@ remove_tracks_from_playlist <- function(playlist_id, uris, authorization = get_s
 #' An ISO 3166-1 alpha-2 country code or the string \code{"from_token"}. Provide this parameter if you want to apply \href{https://developer.spotify.com/documentation/general/guides/track-relinking-guide/}{Track Relinking}
 #' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. \cr
 #' Adding tracks to the current user’s public playlists requires authorization of the \code{playlist-modify-public} scope; adding tracks to the current user’s private playlist (including collaborative playlists) requires the \code{playlist-modify-private} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.
+#' @return
+#' No return value. Tracks are added to playlist.
 #' @export
 add_latest_to_playlist <- function(playlist_id, uri, position = NULL, market = "US", authorization = get_spotify_authorization_code()) {
     id <- strsplit(uri, ":")[[1]][3]
@@ -388,6 +394,8 @@ add_latest_to_playlist <- function(playlist_id, uri, position = NULL, market = "
 #' A maximum of 100 tracks can be removed in one request.
 #' @param authorization Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_authorization_code()}. The access token must have been issued on behalf of the current user. \cr
 #' Removing tracks to the current user’s public playlists requires authorization of the \code{playlist-modify-public} scope; removing tracks from the current user’s private playlist (including collaborative playlists) requires the \code{playlist-modify-private} scope. See \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/#list-of-scopes}{Using Scopes}.
+#' @return
+#' No return value. Tracks are added or reordered on playlist.
 #' @export
 
 reorder_replace_playlist_items <- function(playlist_id, uris, authorization = get_spotify_authorization_code()) {

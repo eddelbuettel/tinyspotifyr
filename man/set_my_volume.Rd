@@ -18,6 +18,9 @@ set_my_volume(
 \item{authorization}{Required. A valid access token from the Spotify Accounts service. See the \href{https://developer.spotify.com/documentation/general/guides/authorization-guide/}{Web API authorization Guide} for more details. Defaults to \code{spotifyr::get_spotify_access_token()}. The access token must have been issued on behalf of the current user. \cr
 The access token must have the \code{user-modify-playback-state} scope authorized in order to control playback.}
 }
+\value{
+No return value.
+}
 \description{
 Set the volume for the user’s current playback device.
 }

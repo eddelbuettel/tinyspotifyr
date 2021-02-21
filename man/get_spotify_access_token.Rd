@@ -14,6 +14,9 @@ get_spotify_access_token(
 
 \item{client_secret}{Defaults to System Environment variable "SPOTIFY_CLIENT_SECRET"}
 }
+\value{
+Returns an environment with access token data.
+}
 \description{
 This function creates a Spotify access token.
 }
