@@ -3,7 +3,7 @@
 
 # tinyspotifyr
 
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/tinyspotifyr?color=yellow)](https://cran.r-project.org/package=tinyspotifyr)
+[![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/tinyspotifyr?color=yellow)](https://cran.r-project.org/package=tinyspotifyr)
 ![](http://cranlogs.r-pkg.org/badges/tinyspotifyr?color=yellow)
 
 ## Overview
@@ -18,7 +18,7 @@ focus of this package is to mirror the spotify api in R.
 R version 3.2.0 (recommended)
 
 ``` r
-install.packages('spotifyr')
+install.packages('tinyspotifyr')
 ```
 
 Development version
