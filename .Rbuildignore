@@ -7,5 +7,4 @@
 ^[.].*$
 ^.*/[.].*$
 ^README\.Rmd$
-^man\/figures\/.*$
 ^.*\.tex$
